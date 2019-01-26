@@ -7,16 +7,24 @@ TEXTBOOK_CSS = ".a-text-normal .a-size-small .a-color-base"
 PRICE_CSS = ".a-size-base.a-color-base"
 
 def gen_url(keyword, page=1):
+	# This generates the URL from a keyword and page number
 	url = URL_FORMAT.format(keyword.replace(" ", "+"))
+	# Would convert "Biology Textbooks" into "Biology+Textbooks" - proper URL encoding
 	if page > 1:
+		# You don't want to add the page parameter for pages == 1
 		url += '&page={}'.format(page)
 	return url
 
 def grab_site(url):
+	# Pulls the site
 	headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+	# This is a non-Python user agent, which prevents Amazon from blocking the request
 	return requests.get(url, headers=headers)
 
 def convert_string_to_float(stringVal):
+	# Turns function would turn $41.11 into 41.11
+	# You could also just use regex
+	# float("".join(re.findall("\d+", stringVal))
 	try:
 		price = stringVal.replace("$", "")
 		price = float(price)
