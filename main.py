@@ -1,5 +1,6 @@
 import requests
 import bs4
+import RandomHeaders
 
 URL_FORMAT = "https://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dstripbooks&field-keywords={}"
 SECTION_CSS = ".a-fixed-left-grid-inner"
@@ -17,7 +18,7 @@ def gen_url(keyword, page=1):
 
 def grab_site(url):
 	# Pulls the site
-	headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'}
+	headers = RandomHeaders.LoadHeader()
 	# This is a non-Python user agent, which prevents Amazon from blocking the request
 	return requests.get(url, headers=headers)
 
