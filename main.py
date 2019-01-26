@@ -24,8 +24,8 @@ def convert_string_to_float(stringVal):
 
 
 if __name__ == '__main__':
-	url = gen_url("Biology Textbooks")
-	#raw_input(url)
+	keyWord = raw_input("Keyword: ")
+	url = gen_url(keyWord)
 	res = grab_site(url)
 	page = bs4.BeautifulSoup(res.text, 'lxml')
 	print page.title.string
@@ -42,8 +42,3 @@ if __name__ == '__main__':
 		tradeInPrice = convert_string_to_float(tradeInPrice)
 		print("Price: {}".format(priceVal))
 		print("Trade In Price: {}".format(tradeInPrice))
-	#print [0].getText()
-	#
-	#page = bs4.BeautifulSoup(res.text, 'lxml')
-
-
