@@ -35,7 +35,7 @@ def convert_string_to_float(stringVal):
 
 
 if __name__ == '__main__':
-	keyWord = raw_input("Keyword: ")
+	keyWord = input("Keyword: ")
 	# This is the keyword you input into the search box on Amazon
 	url = gen_url(keyWord)
 	# This calls the generate URL function for that keyword
@@ -43,7 +43,7 @@ if __name__ == '__main__':
 	# This calls the grab URL function
 	page = bs4.BeautifulSoup(res.text, 'lxml')
 	# This converts it into a Beautiful Soup Object
-	print page.title.string
+	print(page.title.string)
 	# This prints the URL of the page | to verify the URL was correct
 	pageNumbers = int(page.select(".pagnDisabled")[0].getText())
 	# Gets the total amount of page numbers for this search result
