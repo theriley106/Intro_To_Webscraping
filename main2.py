@@ -23,28 +23,22 @@ TRADE_IN_SELECTOR = "#tradeInButton_tradeInValue"
 ISBN_SELECTOR = "#isbn_feature_div .a-color-base"
 EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
 
-## Ebay
-# Pri
-"https://www.ebay.com/sch/i.html?_from=R40&_nkw=0545596270+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
-
-URL.format("biology+textbooks")
-
-
 def extract_ebay_shipping(item):
+	# This extracts the eBay shipping price for the first item on a search page
 	try:
-		prices = utilities.extract_number(item.select(".s-item__logisticsCost")[0].getText())
-		return prices[0]
+		return utilities.extract_number(item.select(".s-item__logisticsCost")[0].getText())[0]
 	except:
 		return 0
 
 def extract_ebay_price(item):
+	# This extracts the eBay selling price for the first item on a search page
 	try:
-		prices = utilities.extract_number(item.select(".s-item__price")[0].getText())
-		return prices[0]
+		return utilities.extract_number(item.select(".s-item__price")[0].getText())[0]
 	except:
 		return 0
 
 def get_price_from_ebay(isbn):
+
 	url = EBAY_URL.format(isbn)
 	res = requests.get(url)
 	#print("EBAY")
