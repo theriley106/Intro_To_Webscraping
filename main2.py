@@ -22,6 +22,7 @@ TRADE_IN_SELECTOR = "#tradeInButton_tradeInValue"
 
 ISBN_SELECTOR = "#isbn_feature_div .a-color-base"
 EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
+EBAY_ITEM_SELECTOR = ".s-item__details"
 
 def create_url(keyword, page=1):
 	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
@@ -53,7 +54,7 @@ def get_price_from_ebay(isbn):
 	print("\nCHECKING: {}".format(url))
 	print("TITLE: ISBN #{}\n".format(isbn))
 	page = bs4.BeautifulSoup(res.text, 'lxml')
-	for item in page.select(".s-item__details"):
+	for item in page.select(EBAY_ITEM_SELECTOR):
 		price = extract_ebay_price(item)
 		# This is the price on the page
 		shipping = extract_ebay_shipping(item)
@@ -61,9 +62,6 @@ def get_price_from_ebay(isbn):
 		if price != 0:
 			return round(price + shipping, 2)
 	return 0
-
-def extract_number(string):
-	return [x for x in re.findall("([0-9]+\.[0-9][0-9]?)?", string) if len(x) > 2]
 
 def extract_dp(item):
 	try:
@@ -77,22 +75,11 @@ def get_isbn(page):
 	except:
 		return None
 
-def is_prime_eligible(item):
-	# This indicates that the item is prime eligible
-	return len(item.select(PRIME_SELECTOR)) > 0
-
 def get_used_price(item):
 	usedPrice = item.select(USED_NEW_PRICE_SELECTOR)
 	try:
 		usedPrice = float(usedPrice[0].getText().replace("$", ""))
 		return usedPrice
-	except:
-		return None
-
-def get_amazon_prime_price(item):
-	amazonPrice = item.select(NEW_PRICE_SELECTOR)
-	try:
-		return float(extract_number(amazonPrice[0].getText())[0])
 	except:
 		return None
 
@@ -103,13 +90,6 @@ def get_trade_in_value(page):
 		return 0
 	else:
 		return utilities.extract_number(tradeIn[0].getText())[0]
-
-def string_to_float(string):
-	return float('.'.join(re.findall("\d+", string)))
-
-def is_good_deal(usedPrice, newPrice):
-	#print(((newPrice - usedPrice) / newPrice))
-	return 100*((newPrice - usedPrice) / newPrice) > 30
 
 def extract_title(item):
 	return item.select(TITLE_SELECTOR)[0].getText()
