@@ -1,4 +1,32 @@
 import re
+from main2 import *
 
 def extract_number(string):
 	return [round(float(x), 2) for x in re.findall("([0-9]+\.[0-9][0-9]?)?", string) if len(x) > 2]
+
+
+def is_prime_eligible(item):
+	# This indicates that the item is prime eligible
+	return len(item.select(PRIME_SELECTOR)) > 0
+
+def get_used_price(item):
+	usedPrice = item.select(USED_NEW_PRICE_SELECTOR)
+	try:
+		usedPrice = float(usedPrice[0].getText().replace("$", ""))
+		return usedPrice
+	except:
+		return None
+
+def get_amazon_prime_price(item):
+	amazonPrice = item.select(NEW_PRICE_SELECTOR)
+	try:
+		return float(extract_number(amazonPrice[0].getText())[0])
+	except:
+		return None
+
+def string_to_float(string):
+	return float('.'.join(re.findall("\d+", string)))
+
+def is_good_deal(usedPrice, newPrice):
+	#print(((newPrice - usedPrice) / newPrice))
+	return 100*((newPrice - usedPrice) / newPrice) > 30
