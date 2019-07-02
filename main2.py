@@ -15,6 +15,7 @@ NEW_PRICE_SELECTOR = ".a-spacing-top-small .a-text-normal"
 
 USED_NEW_PRICE_SELECTOR = ".a-spacing-top-mini .a-color-base"
 # This is the used/new price selector
+TITLE_SELECTOR = ".a-size-medium"
 
 URL.format("biology+textbooks")
 
@@ -36,11 +37,10 @@ def get_used_price(item):
 def get_amazon_prime_price(item):
 	amazonPrice = item.select(NEW_PRICE_SELECTOR)
 	try:
-		return extract_number(amazonPrice[0].getText())
+		return float(extract_number(amazonPrice[0].getText())[0])
 	except:
 		return None
-
-
+		
 def create_url(keyword, page=1):
 	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
 
@@ -51,9 +51,25 @@ def get_url(url):
 def string_to_float(string):
 	return float('.'.join(re.findall("\d+", string)))
 
+def is_good_deal(usedPrice, newPrice):
+	#print(((newPrice - usedPrice) / newPrice))
+	return 100*((newPrice - usedPrice) / newPrice) > 30
+
+def extract_title(item):
+	return item.select(TITLE_SELECTOR)[0].getText()
+
+def check_deal(item):
+	usedPrice = get_used_price(item)
+	newPrice = get_amazon_prime_price(item)
+	if usedPrice != None and newPrice != None:
+		if is_good_deal(usedPrice, newPrice):
+			print(extract_title(item))
+
+
 
 if __name__ == '__main__':
 	urlVal = create_url("Biology Textbooks")
+	urlVal = EXAMPLE_URL
 	print(urlVal)
 	res = get_url(urlVal)
 	page = bs4.BeautifulSoup(res.text, 'lxml')
@@ -61,8 +77,7 @@ if __name__ == '__main__':
 	selections = page.select(SELECTOR)
 	for item in selections:
 		try:
-			if get_used_price(item) != None:
-				print(get_amazon_prime_price(item))
+			check_deal(item)
 			#priceVal = (string_to_float(item.select(PRICE_CSS)[0].getText()))
 			#tradeVal = (string_to_float(item.select(TRADE_SELECTOR)[0].getText()))
 			#print(tradeVal - priceVal)
