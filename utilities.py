@@ -30,3 +30,14 @@ def string_to_float(string):
 def is_good_deal(usedPrice, newPrice):
 	#print(((newPrice - usedPrice) / newPrice))
 	return 100*((newPrice - usedPrice) / newPrice) > 30
+
+def print_result(title, isbn, ebayPrice, tradeInValue, profit, success):
+	if success:
+		print("\n*****[ PROFITABLE BOOK FOUND ]*****")
+	else:
+		print("\n[ UNPROFITABLE BOOK FOUND ]")	
+	print("TITLE: {}".format(title))
+	print("ISBN: {}".format(isbn))
+	print("EBAY PRICE: {}".format(round(ebayPrice,2)))
+	print("TRADE IN PRICE: {}".format(tradeInValue))
+	print("PROFIT: {}\n".format(round(profit,2)))
