@@ -5,36 +5,32 @@ import utilities
 import re
 import traceback
 
-URL = "https://www.amazon.com/s?k={0}&i=stripbooks&ref=nb_sb_noss_2"
-#EXAMPLE_URL = "https://www.amazon.com/s?k=textbook+edition+Pearson&i=stripbooks&ref=nb_sb_noss_2"
-SELECTOR = ".s-include-content-margin"
-PRICE_CSS = ".a-spacing-top-mini .a-color-base"
-TRADE_SELECTOR = ".a-text-normal .a-size-small .a-color-base"
-PRIME_SELECTOR = ".a-icon-medium"
-# This is the CSS selector for the Amazon Prime logo
-NEW_PRICE_SELECTOR = ".a-spacing-top-small .a-text-normal"
-# This is the CSS selector for new prices on Amazon
+## AMAZON STUFF
 
-USED_NEW_PRICE_SELECTOR = ".a-spacing-top-mini .a-color-base"
-# This is the used/new price selector
+AMAZON_URL = "https://www.amazon.com/s?k={0}&i=stripbooks&ref=nb_sb_noss_2"
+PRIME_SELECTOR = ".a-icon-medium"
+NEW_PRICE_SELECTOR = ".a-spacing-top-small .a-text-normal"
 TITLE_SELECTOR = ".a-size-medium"
 TRADE_IN_SELECTOR = "#tradeInButton_tradeInValue"
-
+USED_NEW_PRICE_SELECTOR = ".a-spacing-top-mini .a-color-base"
 ISBN_SELECTOR = "#isbn_feature_div .a-color-base"
-EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
-
+TRADE_SELECTOR = ".a-text-normal .a-size-small .a-color-base"
+SELECTOR = ".s-include-content-margin"
+PRICE_CSS = ".a-spacing-top-mini .a-color-base"
 
 ## EBAY STUFF
 
+EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
 EBAY_ITEM_SELECTOR = ".s-item__details"
 EBAY_SHIPPING_SELECTOR = ".s-item__logisticsCost"
 EBAY_PRICE_SELECTOR = ".s-item__price"
 
 def create_amazon_url(keyword, page=1):
-	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
+	return AMAZON_URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
 
 def get_url(url):
 	headers = randomheaders.LoadHeader()
+	print("Pulling: {}".format(url))
 	return requests.get(url, headers=headers)
 
 def extract_ebay_shipping(item):
@@ -57,8 +53,6 @@ def get_price_from_ebay(isbn):
 	# Creates the eBay URL
 	res = get_url(url)
 	# Makes a network request to get the page
-	print("\nCHECKING: {}".format(url))
-	print("TITLE: ISBN #{}\n".format(isbn))
 	page = bs4.BeautifulSoup(res.text, 'lxml')
 	for item in page.select(EBAY_ITEM_SELECTOR):
 		price = extract_ebay_price(item)
@@ -103,8 +97,6 @@ def extract_title(item):
 def download_item_page(asinNumber):
 	url = "https://www.amazon.com/dp/" + asinNumber
 	res = get_url(url)
-	print("\nCHECKING: {}".format(url))
-	print("TITLE: ASIN #{}\n".format(asinNumber))
 	return bs4.BeautifulSoup(res.text, 'lxml')
 
 def check_for_arbitrage(item):
@@ -112,32 +104,26 @@ def check_for_arbitrage(item):
 	#print(extract_dp(item))
 	asinNumber = extract_dp(item)
 	# This is the ASIN number from Amazon
-	page = download_item_page(asinNumber)
-	# Downloads the item page
-	#print(page.title.string)
-	tradeInValue = get_trade_in_value(page)
-	# Trade In Value
-	isbn = get_isbn(page)
-	#print(tradeInValue)
-	#print(isbn)
-	if tradeInValue != 0 and isbn != None:
-		ebayPrice = get_price_from_ebay(isbn)
-		title = extract_title(item)
-		profit = tradeInValue - ebayPrice
-		if ebayPrice != 0 and profit > 0:
-			print("*****[ PROFITABLE BOOK FOUND ]*****")
-			print("TITLE: {}".format(title))
-			print("ISBN: {}".format(isbn))
-			print("EBAY PRICE: {}".format(ebayPrice))
-			print("TRADE IN PRICE: {}".format(tradeInValue))
-			print("PROFIT: {}\n".format(profit))
-		else:
-			print("[ UNPROFITABLE BOOK FOUND ]")
-			print("TITLE: {}".format(title))
-			print("ISBN: {}".format(isbn))
-			print("EBAY PRICE: {}".format(ebayPrice))
-			print("TRADE IN PRICE: {}".format(tradeInValue))
-			print("PROFIT: {}\n".format(profit))
+	if len(asinNumber) > 0:
+		page = download_item_page(asinNumber)
+		# Downloads the item page
+		#print(page.title.string)
+		tradeInValue = get_trade_in_value(page)
+		# Trade In Value
+		isbn = get_isbn(page)
+		#print(tradeInValue)
+		#print(isbn)
+		if tradeInValue != 0 and isbn != None:
+			ebayPrice = get_price_from_ebay(isbn)
+			title = extract_title(item)
+			profit = tradeInValue - ebayPrice
+			if ebayPrice != 0 and profit > 0:
+				utilities.print_result(title, isbn, ebayPrice, tradeInValue, profit, True)
+				utilities.save_result(title, isbn, ebayPrice, tradeInValue, profit, True)
+			else:
+				
+				utilities.print_result(title, isbn, ebayPrice, tradeInValue, profit, False)
+				utilities.save_result(title, isbn, ebayPrice, tradeInValue, profit, False)
 
 
 
@@ -145,11 +131,8 @@ def check_for_arbitrage(item):
 if __name__ == '__main__':
 	for i in range(1,10):
 		urlVal = create_amazon_url("textbook edition pearson", i)
-		#print("CHECKING: {}\n".format(urlVal))
 		res = get_url(urlVal)
 		page = bs4.BeautifulSoup(res.text, 'lxml')
-		print("\nCHECKING: {}".format(urlVal))
-		print("TITLE: {}\n".format(page.title.string))
 		selections = page.select(SELECTOR)
 		for item in selections:
 			try:
