@@ -23,33 +23,43 @@ TRADE_IN_SELECTOR = "#tradeInButton_tradeInValue"
 ISBN_SELECTOR = "#isbn_feature_div .a-color-base"
 EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
 
+def create_url(keyword, page=1):
+	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
+
+def get_url(url):
+	headers = randomheaders.LoadHeader()
+	return requests.get(url, headers=headers)
+
 def extract_ebay_shipping(item):
-	# This extracts the eBay shipping price for the first item on a search page
+	# This extracts the eBay shipping price CSS selector for the first item on a search page
 	try:
 		return utilities.extract_number(item.select(".s-item__logisticsCost")[0].getText())[0]
 	except:
 		return 0
 
 def extract_ebay_price(item):
-	# This extracts the eBay selling price for the first item on a search page
+	# This extracts the eBay selling price CSS selector for the first item on a search page
 	try:
 		return utilities.extract_number(item.select(".s-item__price")[0].getText())[0]
 	except:
 		return 0
 
 def get_price_from_ebay(isbn):
-
+	# This extracts the selling price (selling+shipping) from eBay for a given ISBN
 	url = EBAY_URL.format(isbn)
-	res = requests.get(url)
-	#print("EBAY")
+	# Creates the eBay URL
+	res = get_url(url)
+	# Makes a network request to get the page
 	print("\nCHECKING: {}".format(url))
 	print("TITLE: ISBN #{}\n".format(isbn))
 	page = bs4.BeautifulSoup(res.text, 'lxml')
 	for item in page.select(".s-item__details"):
 		price = extract_ebay_price(item)
+		# This is the price on the page
 		shipping = extract_ebay_shipping(item)
+		# This is the price on the page
 		if price != 0:
-			return price + shipping
+			return round(price + shipping, 2)
 	return 0
 
 def extract_number(string):
@@ -93,13 +103,6 @@ def get_trade_in_value(page):
 		return 0
 	else:
 		return utilities.extract_number(tradeIn[0].getText())[0]
-
-def create_url(keyword, page=1):
-	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
-
-def get_url(url):
-	headers = randomheaders.LoadHeader()
-	return requests.get(url, headers=headers)
 
 def string_to_float(string):
 	return float('.'.join(re.findall("\d+", string)))
