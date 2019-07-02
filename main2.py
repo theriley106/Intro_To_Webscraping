@@ -22,7 +22,13 @@ TRADE_IN_SELECTOR = "#tradeInButton_tradeInValue"
 
 ISBN_SELECTOR = "#isbn_feature_div .a-color-base"
 EBAY_URL = "https://www.ebay.com/sch/i.html?_from=R40&_nkw={0}+&_sacat=0&LH_TitleDesc=0&_sop=15&rt=nc&LH_BIN=1"
+
+
+## EBAY STUFF
+
 EBAY_ITEM_SELECTOR = ".s-item__details"
+EBAY_SHIPPING_SELECTOR = ".s-item__logisticsCost"
+EBAY_PRICE_SELECTOR = ".s-item__price"
 
 def create_url(keyword, page=1):
 	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
@@ -34,14 +40,14 @@ def get_url(url):
 def extract_ebay_shipping(item):
 	# This extracts the eBay shipping price CSS selector for the first item on a search page
 	try:
-		return utilities.extract_number(item.select(".s-item__logisticsCost")[0].getText())[0]
+		return utilities.extract_number(item.select(EBAY_SHIPPING_SELECTOR)[0].getText())[0]
 	except:
 		return 0
 
 def extract_ebay_price(item):
 	# This extracts the eBay selling price CSS selector for the first item on a search page
 	try:
-		return utilities.extract_number(item.select(".s-item__price")[0].getText())[0]
+		return utilities.extract_number(item.select(EBAY_PRICE_SELECTOR)[0].getText())[0]
 	except:
 		return 0
 
