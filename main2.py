@@ -30,7 +30,7 @@ EBAY_ITEM_SELECTOR = ".s-item__details"
 EBAY_SHIPPING_SELECTOR = ".s-item__logisticsCost"
 EBAY_PRICE_SELECTOR = ".s-item__price"
 
-def create_url(keyword, page=1):
+def create_amazon_url(keyword, page=1):
 	return URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
 
 def get_url(url):
@@ -144,7 +144,7 @@ def check_for_arbitrage(item):
 #print("ISBN: {}".format(isbn))
 if __name__ == '__main__':
 	for i in range(1,10):
-		urlVal = create_url("textbook edition pearson", i)
+		urlVal = create_amazon_url("textbook edition pearson", i)
 		#print("CHECKING: {}\n".format(urlVal))
 		res = get_url(urlVal)
 		page = bs4.BeautifulSoup(res.text, 'lxml')
