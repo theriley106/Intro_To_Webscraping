@@ -26,12 +26,18 @@ EBAY_SHIPPING_SELECTOR = ".s-item__logisticsCost"
 EBAY_PRICE_SELECTOR = ".s-item__price"
 
 def create_amazon_url(keyword, page=1):
+	# This generates valid Amazon URLs given a search query
 	return AMAZON_URL.format(keyword.replace(" ", "+")) + "&page={}".format(page)
 
 def get_url(url):
-	headers = randomheaders.LoadHeader()
-	print("Pulling: {}".format(url))
-	return requests.get(url, headers=headers)
+	# This is the function to make the network request to Amazon
+	for i in range(3):
+		try:
+			headers = randomheaders.LoadHeader()
+			print("Pulling: {}".format(url))
+			return requests.get(url, headers=headers, timeout=5)
+		except:
+			print("Failed Network Request | Retrying")
 
 def extract_ebay_shipping(item):
 	# This extracts the eBay shipping price CSS selector for the first item on a search page
@@ -64,26 +70,30 @@ def get_price_from_ebay(isbn):
 	return 0
 
 def extract_dp(item):
+	# This extract the Amazon ASIN Number from an item page | This is an internal identifier for the book
 	try:
 		return str(item.select(".s-line-clamp-2")[0]).partition("/dp/")[2].partition('/')[0]
 	except:
 		return None
 
 def get_isbn(page):
+	# This extracts the ISBN from an item page | This is an external identifier for the book
 	try:
 		return page.select(ISBN_SELECTOR)[3].getText().strip()
 	except:
 		return None
 
 def get_used_price(item):
-	usedPrice = item.select(USED_NEW_PRICE_SELECTOR)
+	# This extracts the used price from an Amazon Search page (Generally 16 used prices are on each page)
 	try:
+		usedPrice = item.select(USED_NEW_PRICE_SELECTOR)
 		usedPrice = float(usedPrice[0].getText().replace("$", ""))
 		return usedPrice
 	except:
 		return None
 
 def get_trade_in_value(page):
+	# This extracts the trade in value from an item page
 	isbn = get_isbn(page)
 	tradeIn = page.select(TRADE_IN_SELECTOR)
 	if len(tradeIn) == 0:
@@ -92,14 +102,17 @@ def get_trade_in_value(page):
 		return utilities.extract_number(tradeIn[0].getText())[0]
 
 def extract_title(item):
+	# This extracts the item title from a search page
 	return item.select(TITLE_SELECTOR)[0].getText()
 
 def download_item_page(asinNumber):
+	# This downloads the page for a given ASIN number | IE the item page
 	url = "https://www.amazon.com/dp/" + asinNumber
 	res = get_url(url)
 	return bs4.BeautifulSoup(res.text, 'lxml')
 
 def check_for_arbitrage(item):
+	# This function checks to see if an item object could be a potential arbitrage opportunity
 	usedPrice = get_used_price(item)
 	#print(extract_dp(item))
 	asinNumber = extract_dp(item)
@@ -128,11 +141,15 @@ def check_for_arbitrage(item):
 
 if __name__ == '__main__':
 	for i in range(1,10):
+		# Goes from page 1 -> 9
 		urlVal = create_amazon_url("textbook edition pearson", i)
+		# Creates an Amazon URL for the search query "Textbook edition pearson"
 		res = get_url(urlVal)
+		# Makes a network request to grab that URL
 		page = bs4.BeautifulSoup(res.text, 'lxml')
-		selections = page.select(SELECTOR)
-		for item in selections:
+		# Page is a BS4 object that allows us to parse the HTML
+		searchResults = page.select(SELECTOR)
+		for item in searchResults:
 			try:
 				check_for_arbitrage(item)
 			except Exception as exp:
