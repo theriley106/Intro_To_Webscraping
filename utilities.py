@@ -1,5 +1,9 @@
 import re
+import os
+import csv
 from main2 import *
+
+SAVE_TO = "results.csv"
 
 def extract_number(string):
 	return [round(float(x), 2) for x in re.findall("([0-9]+\.[0-9][0-9]?)?", string) if len(x) > 2]
@@ -41,3 +45,12 @@ def print_result(title, isbn, ebayPrice, tradeInValue, profit, success):
 	print("EBAY PRICE: {}".format(round(ebayPrice,2)))
 	print("TRADE IN PRICE: {}".format(tradeInValue))
 	print("PROFIT: {}\n".format(round(profit,2)))
+
+def save_result(title, isbn, ebayPrice, tradeInValue, profit, success):
+	if os.path.exists(SAVE_TO) == False:
+		with open(SAVE_TO, 'w') as myfile:
+			wr = csv.writer(myfile)
+			wr.writerow(["Title", "ISBN", "Ebay Price", "Trade In Value", "Profit"])
+	with open(SAVE_TO, 'a') as myfile:
+		wr = csv.writer(myfile)
+		wr.writerow([title, isbn, round(ebayPrice, 2), tradeInValue, round(profit,2)])

@@ -113,6 +113,7 @@ def check_for_arbitrage(item):
 		isbn = get_isbn(page)
 		#print(tradeInValue)
 		#print(isbn)
+		print(isbn)
 		if tradeInValue != 0 and isbn != None:
 			ebayPrice = get_price_from_ebay(isbn)
 			title = extract_title(item)
@@ -125,9 +126,6 @@ def check_for_arbitrage(item):
 				utilities.print_result(title, isbn, ebayPrice, tradeInValue, profit, False)
 				utilities.save_result(title, isbn, ebayPrice, tradeInValue, profit, False)
 
-
-
-#print("ISBN: {}".format(isbn))
 if __name__ == '__main__':
 	for i in range(1,10):
 		urlVal = create_amazon_url("textbook edition pearson", i)
