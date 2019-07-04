@@ -6,8 +6,8 @@ from main2 import *
 SAVE_TO = "results.csv"
 
 def extract_number(string):
+	# This extracts prices from strings
 	return [round(float(x), 2) for x in re.findall("([0-9]+\.[0-9][0-9]?)?", string) if len(x) > 2]
-
 
 def is_prime_eligible(item):
 	# This indicates that the item is prime eligible
@@ -39,7 +39,7 @@ def print_result(title, isbn, ebayPrice, tradeInValue, profit, success):
 	if success:
 		print("\n*****[ PROFITABLE BOOK FOUND ]*****")
 	else:
-		print("\n[ UNPROFITABLE BOOK FOUND ]")	
+		print("\n[ UNPROFITABLE BOOK FOUND ]")
 	print("TITLE: {}".format(title))
 	print("ISBN: {}".format(isbn))
 	print("EBAY PRICE: {}".format(round(ebayPrice,2)))
