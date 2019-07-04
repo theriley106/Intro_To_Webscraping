@@ -1,7 +1,7 @@
 import re
 import os
 import csv
-from main2 import *
+from complete import *
 
 SAVE_TO = "results.csv"
 
