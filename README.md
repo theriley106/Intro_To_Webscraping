@@ -4,10 +4,13 @@ My Introduction to Web Scraping talk at Capital One
 
 ## Instructions
 
+### Install Dependencies
 
 ```bash
 $ pip install -r requirements.txt
 ```
+
+### Find eBay -> Amazon Trade-In Arbitrage Opportunities
 
 ```bash
 $ python complete.py
