@@ -12,8 +12,10 @@ def extract_number(string):
 def is_prime_eligible(item):
 	# This indicates that the item is prime eligible
 	return len(item.select(PRIME_SELECTOR)) > 0
+	
 
 def get_used_price(item):
+	# This returns the used price for an item in the search result page
 	usedPrice = item.select(USED_NEW_PRICE_SELECTOR)
 	try:
 		usedPrice = float(usedPrice[0].getText().replace("$", ""))
