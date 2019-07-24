@@ -1,6 +1,6 @@
 # Intro_To_Webscraping
 
-My Introduction to Web Scraping talk at Capital One
+My Introduction to Web Scraping talk
 
 ## Instructions
 
@@ -42,4 +42,3 @@ Pulling: https://www.ebay.com/sch/i.html?_from=R40&_nkw=9780134257013+&_sacat=0&
 ...
 
 ```
-
