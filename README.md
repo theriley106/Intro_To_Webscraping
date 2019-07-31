@@ -1,6 +1,8 @@
 # Intro_To_Webscraping
 
-My Introduction to Web Scraping talk
+Finding Arbitrage Opportunities in the Amazon Textbook Trade-In Program.
+
+My Introduction to Web Scraping talk at Capital One.
 
 ## Instructions
 
