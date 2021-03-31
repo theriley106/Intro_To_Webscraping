@@ -1,4 +1,4 @@
-lxml==4.3.4
+lxml==4.6.3
 BeautifulSoup==3.2.1
 requests==2.21.0
 randomheaders==1.2
